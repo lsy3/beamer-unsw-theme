@@ -9,7 +9,7 @@ Design was based on the [Saarland beamer template](https://github.com/kailashbuk
   * Personally, I used Tex Studio in compiling this Latex Beamer code.
   * Check out [`slides.pdf`](slides.pdf) for a sample output.
 * If you want to use Beamer with presenter view (like Microsoft PPT), check out [Dual Screen PDF viewer for latex beamer](https://github.com/dannyedel/dspdfviewer) and its [installation procedure](http://dspdfviewer.danny-edel.de/#how-do-i-install-it). You'll also have to generate the slides.pdf with notes [something like this](slides-with-notes.pdf)
-  * Make you uncomment the following code snippets at `slides.text`
+  * Make you uncomment the following code snippets at `slides.tex`
 ```
 %\usepackage{pgfpages}
 %\setbeameroption{show notes on second screen}
