@@ -1,0 +1,16 @@
+\mode<presentation>
+
+\DeclareOptionBeamer{background}{\PassOptionsToPackage{background=#1}{beamerouterthemeunsw}}
+\DeclareOptionBeamer{logo}{\PassOptionsToPackage{logo=#1}{beamerouterthemeunsw}}
+\DeclareOptionBeamer{sidelogo}{\PassOptionsToPackage{sidelogo=#1}{beamerouterthemeunsw}}
+\ProcessOptionsBeamer
+
+\usecolortheme{unsw}	% calls beamercolorthemeunsw.sty
+\usefonttheme{unsw}		% calls beamerfontthemeunsw.sty
+\useinnertheme{unsw}	% calls beamerinnerthemeunsw.sty
+\useoutertheme{unsw}	% calls beamerouterthemeunsw.sty
+
+\setbeamertemplate{navigation symbols}{} 	% turn off pdf navigation symbols
+
+\mode<all>
+\endinput

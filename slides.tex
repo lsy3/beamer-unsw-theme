@@ -1,0 +1,99 @@
+% the sample slide is created with 16:9 aspect ratio
+\documentclass[aspectratio=169]{beamer}
+
+% remove the options if you do not want to have them
+\usetheme[
+	% background=images/background.jpg, % you can add your own background image
+	logo=images/unsw-portrait.png,
+	sidelogo=images/unsw-landscape.png,
+]{unsw}
+% uncomment to show notes. Works very nicely with dspdfviewer. You get something similar to PPT's presenter view.
+%\usepackage{pgfpages}
+%\setbeameroption{show notes on second screen}
+
+% information for the title page
+\author{Luke Wicent Sy}
+\title{UNSW Beamer Theme}
+\subtitle{An unofficial theme for University of New South Wales}
+\institute{Graduate School of Biomedical Engineering}
+\date{\today}
+
+\begin{document}
+	% use plain option to remove the page number from the title slide
+	\begin{frame}[plain]
+		\titlepage
+	\end{frame}
+	
+	\begin{frame}{Welcome to Sydney!}
+	Sydney, capital of New South Wales and one of Australia's largest cities, is best known for its harbourfront Sydney Opera House, with a distinctive sail-like design.
+		\begin{itemize}
+			\item Item \textit{item}
+				\begin{itemize}
+					\item I am a subitem
+				\end{itemize}
+			\item \textbf{this is a bold text}
+			\item \alert{this is an alert}
+			\item italics is not supported at the moment
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}{Sample Blocks}
+		\framesubtitle{This is a subtitle}
+		\begin{block}{Standard Block}
+			This is a standard block.
+		\end{block}
+		
+		\begin{exampleblock}{Example Block}
+			This is an example block.
+		\end{exampleblock}
+		
+		\begin{alertblock}{Alert Block}
+			This is an alert block.
+		\end{alertblock}
+	\end{frame}
+	
+	\begin{frame}{Math}
+		Mathematics is the queen of sciences and arithmetic is the queen of mathematics.
+
+		\begin{align*}
+			\vec{x} &= \vec{q}_{s, k} = \vec{R}_{s, k} = 
+			\begin{bmatrix}
+			\vec{R}_{s, x, k} & \vec{R}_{s, y, k} & \vec{R}_{s, z, k}
+			\end{bmatrix} \\
+			& \vec{p}_{lhip, k} = \vec{p}_{pelv, k} + d_{pelv}/2*\vec{R}_{pelv, y, k} \\
+			& \vec{p}_{lkne, k} = \vec{p}_{lank, k} + d_{ltib}*\vec{R}_{ltib, z, k} \\
+			& (\vec{p}_{lhip, k} - \vec{p}_{lkne, k} ) \cdot \vec{R}_{ltib, y, k} = 0\\
+			& ||\vec{p}_{lhip, k} - \vec{p}_{lkne, k}||_2 = d_{lfem}
+		\end{align*}	
+		
+		% these notes will only show when you uncomment 
+		\note[item]{sample note 1}
+		\note[item]{sample note 2}	
+		
+	\end{frame}
+
+	\begin{frame}{Two Columns}
+		We can also add two columns in the slides.
+		\begin{columns}[t]
+			\begin{column}[T]{0.4\textwidth}
+				This is the first column. In this column, we can also add a block for instance.
+				\vspace{1em}
+				\begin{block}{Block}
+					I am a block in a column.
+				\end{block}
+			\end{column}
+			\begin{column}[T]{0.4\textwidth}
+				\begin{itemize}
+					\item In this column,
+					\item we just add the
+					\item bullet points.
+				\end{itemize}
+			\end{column}
+		\end{columns}
+	\end{frame}
+	\begin{frame}{Acknowledgements}
+		This theme is based on Kailash Budhathoki's \href{https://github.com/kailashbuki/beamerthemesaarland}{Saarland Beamer Theme}.
+		
+		Color guide was based from the visual guide found at the \href{https://www.brand.unsw.edu.au/download/}{UNSW brand hub}.
+	\end{frame}
+\end{document}

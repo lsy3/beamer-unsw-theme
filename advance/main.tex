@@ -1,0 +1,589 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{pgfpages}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{multicol, bigstrut}
+\usepackage{rotating}
+
+\setlength\abovecaptionskip{0pt}
+\captionsetup[figure]{font=scriptsize, labelfont=scriptsize}
+\captionsetup[sub]{font=scriptsize}
+\newcommand\scalemath[2]{\scalebox{#1}{\mbox{\ensuremath{\displaystyle #2}}}}
+
+\usepackage{amssymb}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\mat}[1]{\mathbf{#1}}
+\renewcommand{\vec}{\mathbf}
+
+\usetheme[
+	logo=figures/unsw-portrait.png,
+	sidelogo=figures/unsw-landscape.png,
+]{unsw}
+\setbeameroption{show notes on second screen}
+\setbeamerfont{footnote}{size=\tiny}
+
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+\tikzstyle{block} = [rectangle, draw, text width=6em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
+\tikzstyle{cloud} = [draw=white, minimum height=2em]
+
+\usepackage[beamer,customcolors]{hf-tikz}
+\tikzset{hl/.style={
+    set fill color=gray!80!black!40,
+    set border color=gray!80!black!40,
+  },
+}
+
+%Information to be included in the title page:
+\title{Comprehensive and accurate estimation of lower body movement using few wearable sensors}
+\subtitle{Annual Progress Review S1 2018}
+\institute{Graduate School of Biomedical Engineering, UNSW}
+\author{Luke Wicent Sy \\
+		{Supervisors: Scientia Prof. Nigel Lovell, A/Prof. Stephen Redmond}
+	   }
+\date{June 4, 2018}
+ 
+\begin{document}
+ 
+\begin{frame}[plain]
+	\titlepage
+\end{frame}
+
+\section{Motivation}
+    \begin{frame}{Human movement}
+        \begin{figure}
+            \centering
+            \includegraphics[height=0.7\textheight]{figures/physicalandmentalaffectsgait.png}
+            \caption*{physical + mental = gait \footnote{http://therebelworkout.com/blog/2016/03/25/physical-health-vs-mental-health}}
+            \label{fig:my_label}
+        \end{figure}
+
+        \note[item]{Most people move their bodies effortlessly. Yet, hidden within even ordinary movement lies a lot of information about us!}
+        \note[item]{Our physical and mental health affects the way we move. Unfortunately and fortunately, our body is a very complex system, such that there is almost always no single explanation for the way a person moves or walk. Nevertheless, that person's movement can give us hint on what is happening inside!}
+    \end{frame}
+    
+    \begin{frame}{Gait Analysis - study of human movement}
+        \begin{figure}
+	        \centering
+            \subcaptionbox{Osteoarthritis
+                \footnote{https://commons.wikimedia.org/wiki/File:Osteoarthritis.png}}
+	        	{\includegraphics[width=0.3\textwidth]{figures/osteoarthritis.jpg}} 
+	        \subcaptionbox{Cerebral palsy surgery}
+	        	{\includegraphics[width=0.3\textwidth]{figures/cerebralpalsy.jpg}}
+	        \subcaptionbox{Fall risk}
+	        	{\includegraphics[width=0.3\textwidth]{figures/FallDetectionAirbag.png}}
+        	\subcaptionbox{Performance improvement}
+	        	{\includegraphics[width=0.3\textwidth]{figures/golf-perf-improvement.jpg}}
+        	\subcaptionbox{Diagnose Parkinson's Disease}
+	        	{\includegraphics[width=0.3\textwidth]{figures/parkinsonsdisease.jpg}}
+        	\subcaptionbox{Feedback}
+	        	{\includegraphics[width=0.3\textwidth]{figures/gait-feedback.png}}
+	    \end{figure}
+	    \note[item]{Hence, it is no wonder that people got interested on the study of human motion, also known as gait analysis. Gait analysis has a wide range of applications.}
+        \note[item]{In rheumatology, it can help diagnose osteoarthritis}
+        \note[item]{In orthopedics, it changes or reinforces surgical decision making in children with cerebral palsy by understanding existing gait deviations in cerebral palsy patients.}
+        \note[item]{In geriatrics, it can help assess fall risk. Hausdorff etal has shown that stride time variability, an example of a parameter measured for gait analysis, is a good indicator of fall risk.}
+        \note[item]{In neurology, it can help diagnosis Parkinson’s disease, understand gait deviations, and then inform therapy.}
+        \note[item]{In sports, it is used for performance improvement and injury prevention.}
+		\note[item]{Last, gait analysis is integral to gait assistive devices. These devices can provide real time feedback (e.g. haptics) which can help correct their walk for better stability. }
+		\note[item]{Recent technological advances have even brought remote gait monitoring which has the potential to identify movement disorders even before it happens.}
+    \end{frame}
+    
+	\begin{frame}{Motion Capture (MoCap)}
+		\begin{itemize}
+		    \item Track body posture, specifically joint positions and orientations of body segments
+			\item Wide range of applications (clinical, sports, animation, robotics, virtual reality)
+		\end{itemize}
+	
+	    \begin{figure}
+	        \centering
+	        \subcaptionbox{Jogging}
+	        	{\includegraphics[width=0.3\textwidth]{figures/mocapjogging.jpeg}}
+	        \subcaptionbox{Animation}
+	        	{\includegraphics[width=0.3\textwidth]{figures/lotrmocap.png}}
+	        \subcaptionbox{Teleoperation}
+	        	{\includegraphics[width=0.3\textwidth]{figures/teleoperating.png}}
+	    \end{figure}
+    
+        \note[item]{Motion capture is the technology used to do gait analysis. Other than clinical applications mentioned earlier, it can also be used in animation, robotics, and VR.}
+    	\note[item]{Motion capture is the tracking of the human body, where the system estimates the joint positions and orientations of body segments.}
+	\end{frame}
+
+    \begin{frame}{MoCap Output}
+        \begin{figure}
+            \centering
+            \subcaptionbox{3D skeleton}
+	        	{\includegraphics[width=0.45\textwidth]{figures/mocap-sample-output1.png} }
+            \subcaptionbox{Joint kinematics 
+                \footnote{http://www.clinicalgaitanalysis.com/data/kinematics.jpg} }
+	        	{\includegraphics[width=0.5\textwidth]{figures/kinematics.jpg} }
+        \end{figure}
+        
+        \note[item]{skeleton figure telling us the 3d state of the body}
+        \note[item]{joint angles. one way clinicians use this is that they have reference movement of healthy subjects, shown in the gray shade, and if the subject's motion is outside this range, this can be an indication of problem}
+    \end{frame}
+    
+    \begin{frame}{Human Motion Capture Systems (HMCS)}
+    	\textbf{Types}
+    	\begin{enumerate} [<+->]
+    		\item Nonwearable HMCS (camera-based)
+    		\item Wearable HMCS (wearable sensors)
+    		\item Hybrid HMCS (both cameras and wearable sensors)
+    	\end{enumerate}
+    
+    	\note{Human motion capture systems can be categorized into 3 types}
+    	\note[item]<1>{First, nonwearable system}
+    	\note[item]<1>{It typically captures position through multiple cameras, by doing some sort of triangulation on markers attached to the human body.}
+    	\note[item]<1>{Special: It's the industry standard for accuracy, capable of capturing up to mm 3d position accuracy.}
+    	\note[item]<1>{Figure (a) shows a sample of such system}
+    	\note[item]<2>{Second is the wearable system where in my opinion, is where technology trend is heading.}
+    	\note[item]<2>{It typically captures data through sensor units such as Inertial measurement units (IMU) which measures acceleration and angular velocity.}
+    	\note[item]<2>{Figure (b) shows a sample of such system.}
+    	\note[item]<3>{Third is the hybrid system.}
+    	\note[item]<3>{It is the combination of nonwearable and wearable systems}
+    	
+        \begin{figure}
+        	\centering
+        	\subcaptionbox{Vicon 
+        	    \footnote{https://commons.wikimedia.org/wiki/File:MotionCapture.jpg} }
+        		{\includegraphics[height=0.45\textheight]{figures/220px-MotionCapture.jpg}}
+    		\hspace{1cm}
+        	\subcaptionbox{Xsens
+        	    \footnote{https://www.xsens.com/products/xsens-mvn-analyze/} }
+        		{\includegraphics[height=0.45\textheight]{figures/xsenssystem.png}}
+        \end{figure}
+    \end{frame}
+
+	\begin{frame}{Comparison of HMCS}
+        % Table generated by Excel2LaTeX from sheet 'researchgap2'
+        \begin{table}[htbp]
+          \centering
+            \begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+            \hline
+                \includegraphics<1>[height=0.35\textheight]{figures/220px-MotionCapture.jpg}
+                \includegraphics<2>[height=0.35\textheight]{figures/xsenssystem.png}
+                \includegraphics<3>[height=0.35\textheight]{figures/sparse-inertial-poser.png}
+                  & \begin{sideways}high accuracy\end{sideways} & \begin{sideways}all range of motion\end{sideways} & \begin{sideways}large capture  volume\end{sideways} & \begin{sideways}ease of setup\end{sideways} & \begin{sideways}robust to occlusion\end{sideways} & \begin{sideways}inconspicuous setup\end{sideways} & \begin{sideways}low cost\end{sideways} & \begin{sideways}fast computation\end{sideways} \bigstrut\\
+            \hline
+            \tikzmarkin<1>[hl]{a}nonwearable & \cmark & \cmark & \xmark & \xmark & \xmark & \xmark & \xmark & \cmark \bigstrut 
+            \tikzmarkend{a} \\ \hline
+            \tikzmarkin<1>[hl]{e}hybrid & \cmark & \cmark & \xmark & \cmark & \cmark & \xmark & \xmark & \cmark \bigstrut 
+            \tikzmarkend{e} \\ \hline 
+            \tikzmarkin<2>[hl]{b}wearable (1 sensor / segment) & \xmark & \cmark & \cmark & \cmark & \cmark & \xmark & \xmark & \cmark \bigstrut 
+            \tikzmarkend{b} \\ \hline 
+            \tikzmarkin<3>[hl]{c}wearable (sparse,  Marcard etal) & \xmark & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark & \xmark \bigstrut
+            \tikzmarkend{c} \\ \hline
+            \tikzmarkin<4>[hl]{d}proposed system & \xmark & \xmark & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \bigstrut
+            \tikzmarkend{d} \\ \hline
+            \end{tabular}%
+        \end{table}%
+
+
+        \note[item]<1>{Nonwearable and hybrid mcs \newline
+            great accuracy. 1 mm. industry standard \newline
+            captures all RoM within capture volume \newline
+            capture volume is very limited \newline
+            difficult to setup, put 16 markers you need them to wear tight clothes \newline
+            occlusion to camera and conspicuous for every day life \newline
+			Uneconomical to deploy in hospitals due to the space and personel requirement on top of it being time consuming \newline
+			motion capture inside a laboratory may have deviations from eveyday natural walking as found by Lee etal when comparing treadmill walking from overground natural walking.
+		}
+		\note[item]<2>{1 sensor / segment wearable mcs, both commercial and research ones, helped solve some of the problems although at a lower accuracy \newline
+		    as sensor are self contained, capture volume is much bigger \newline
+		    no occlusion issues \newline
+		    easier to setup \newline
+		    depending on implementation, can capture all RoM \newline
+		    1 sensor for each body segment (7 sensors to the lower body) making it too conspicuous for everyday use, leading to non compliance, a huge cause of why medical interventions fail.
+	    }
+		\note[item]<3>{Sparse mcs is where the future is going. \newline
+    		To the best of my knowledge, only 1 other group in computer graphics and animation is doing it for now \newline
+    		Main issue is the loss of information since less sensors are used. 
+    		On top of that, the error from the remaining sensors grows very fast in time due to the nature of how we calculate position. \newline
+    		Marcard etal coped with it using window based optimizer which is computationally expensive. 7.5 min for 17 sec of motion. }
+		\note[item]<4>{My proposed system aims for a sparse wearable mcs that is (almost) real time at the cost of making some assumptions that will make me unable to monitor some movements \newline
+    		A reason for wanting a real time system is that so it can be used to drive gait assistive, devices which can give real time feedback to users which can help correct their posture or walking stability
+		}
+		
+	\end{frame}
+
+\section{Aims}
+    \begin{frame}
+        \frametitle{Novelty}
+        Develop algorithm(s) to reconstruct the lower limbs using sparse sensors
+        \begin{enumerate}
+            \item Use estimator that is (almost) real time
+            \item Formulation of body model and biomechanical constraints
+            \item Utilise new sensor information (i.e., point-to-point distance measurement using ultra-wideband (UWB) ranging)
+        \end{enumerate}
+    \end{frame}
+    
+	\begin{frame}
+		\frametitle{Aims}
+		\begin{columns}
+			\column{0.6\textwidth}
+			\begin{enumerate}[<+->]
+				\item Develop sparse sensor MoCap algorithm to track the pelvis, femur, and tibia
+				\item Incorporate UWB measurement
+				\item Extend MoCap algorithm to also track the foot
+			\end{enumerate}
+		
+			\note[item]<1>{3 aims. Each aim build on top of the prior aims}
+			\note[item]<1>{Development of a MoCap algorithm to track 5 body segments. Sensor will be attached to ... to track ...}
+			\note[item]<1>{Cope with the information loss from not having a sensor on the thigh by making assumptions from our knowledge on how the body moves.}
+			
+			\note[item]<2>{However, IMUs are very noisy and it is expected that system accuracy can be improved by adding new sources of information.}
+			\note[item]<2>{Adding a UWB ranging sensor which measures the distance between 2 points.}
+			\note[item]<2>{Validate the system on able and non-able bodies subjects.}
+			\note[item]<2>{Determine how the assumptions made affected the accuracy of the system.}
+			
+			\note[item]<3>{Finally, I will extend the system by including the foot, tracking 7 body segments using 3 sensor units.}
+			
+			\column{0.4\textwidth}
+			\begin{figure}[l]
+				\includegraphics<1>[width=\textwidth]{figures/sparse-mocap-step1.png}
+				\includegraphics<2>[width=\textwidth]{figures/sparse-mocap-step2.png}
+				\includegraphics<3>[width=\textwidth]{figures/sparse-mocap-step3.png}
+				\caption*{Proposed MoCap System}
+			\end{figure}
+		\end{columns}
+	\end{frame}
+	
+	\subsection{Aim 1 5 segment estimator}
+        \begin{frame}{Aim 1 Estimator Overview (v1)}
+            \begin{tikzpicture}[node distance=3cm]
+                \node at (0, 0) [block] (pred) { Prediction Update $f(\vec{x}_{k}, \vec{u}_{k})$ };
+                \node [block, right of=pred] (meas) { Measurement Update $h(\vec{x}_{k})$};
+                \node [block, right of=meas] (cstr) { Constraint Update };
+                \node [cloud, left of=pred] (x) {$\vec{x}_{k}$};
+                \node [cloud, below of=x, node distance=1cm] (u) {$\vec{u}_{k}$};
+                
+                \path [line] (x) -- (pred);
+                \path [line] (u) -- (pred);
+                \path [line] (pred) -- (meas);
+                \path [line] (meas) -- (cstr);
+                \path [line] (cstr.south) -- (6, -1.5)
+                                -- node[midway] {$\vec{x}_{k+1}, \mat{P}_{k+1}$}(0, -1.5) 
+                                -- (pred.south);
+            \end{tikzpicture}
+            
+            % $\vec{x}_{k+1}, \mat{P}^~_{k+1}$
+            \begin{itemize}
+                \item Estimator: Constrained Extended Kalman Filter (EKF) \pause
+                \item State $\vec{x}$: position, velocity, and orientation of the pelvis and tibia
+    			\item Input $\vec{u}$: acceleration from IMU attached to the pelvis and tibia \pause
+    			\item Prediction update: kinematic equations (e.g., $p = p_0 + vt + \frac{1}{2} at^2$) \pause
+                \item Measurement update:
+                    \begin{itemize}
+			            \item Zero velocity update: $\vec{v}_{segment, k} = 0$
+			            \item Floor assumption: $\vec{p}_{segment, k, z} = floor$
+                    \end{itemize} \pause
+                \item Constraint update: 2 formulations of hinge knee joint
+            \end{itemize}
+            \note[item]<1>{The block diagram shows an overview of my estimator based on the EKF framework. For each time step, it use all possible information it have to get the best possible estimate.}
+            \note[item]<1>{There are 3 main steps namely ...}
+            \note[item]<2>{The goal of the algorithm is to estimate ...}
+            \note[item]<2>{Source of information are accelerometer and orientation given to me by orientation estimation algorithms}
+            \note[item]<3>{At the prediction update, the next step is predicted using acceleration and our model based on kinematic equations}
+            \note[item]<4>{At the measurement update, special events are detected to improve our estimate, namely when the foot touches the ground}
+            \note[item]<4>{In our algorithm, every foot step, we set the ankle velocity to 0 and the ankle z position to the floor z position}
+            \note[item]<5>{Lastly, at the constraint update, orientation and our knowledge of how the body moves are used to ensures that the state estimate ends on a physically possible configuration}
+        \end{frame}
+
+        \begin{frame}{Aim 1 Estimator Overview (v1)}
+            \begin{columns}
+                \column{0.6\textwidth}
+                \begin{itemize}
+                    \item Constraint formulation 1: linear, lock knee
+                        { \tiny \begin{align*}
+                            & \vec{q}_{s, k} = \mat{R}_{s, k} = 
+                                \begin{bmatrix}
+                                    \vec{R}_{s, x, k} & \vec{R}_{s, y, k} & \vec{R}_{s, z, k}
+                                \end{bmatrix} \\
+    	                    & \vec{p}_{lhip, k} = \vec{p}_{pelv, k} + d_{pelv}/2*\vec{R}_{pelv, y, k} \\
+                            & \vec{p}_{lkne, k} = \vec{p}_{lank, k} + d_{ltib}*\vec{R}_{ltib, z, k} \\
+                            & \alpha_{lkne, k} = \cos^{-1} \left( (\vec{p}_{lhip, k} - \vec{p}_{lkne, k} ) \cdot \vec{R}_{ltib, z, k} \right)\\
+                            & \vec{p}_{lank, k} - \vec{p}_{pelv, k} = d_{pelv}/2*\vec{R}_{pelv, y, k} - d_{lfem}* \\
+                            & \left(  cos(\alpha_{lkne})*\vec{R}_{ltib, z, k} + sin(\alpha_{lkne})*\vec{R}_{ltib, x, k} \right) \\
+                            & - d_{ltib}*\vec{R}_{ltib, z, k}
+                        \end{align*}  }%
+                    \item Projection algorithm: Maximum likelihood, Least squares estimation
+                \end{itemize}
+                
+                \note[item]{Made assumptions to make the constraint linear, namely make the knee not move before and after the constraint update}
+                \note[item]{Things get very complicated when things are non-linear}
+                \note[item]{Here are the equations that define the constraint, but I won't delve in deeper.}
+                \note[item]{Intuitively, what it does is to make sure that the red arrow and the blue arrow meet at the same point}
+                \note[item]{Red arrow = my estimate from measurement update. Blue arrow = my body reconstruction from orientation estimate and knee lock.}
+                \column{0.4\textwidth}
+                \begin{figure}
+                    \centering
+                    \includegraphics[height=0.7\textheight]{figures/body3d-HJCv1.png}
+                    \caption*{Formulation 1}
+                \end{figure}
+            \end{columns}
+        \end{frame}
+        
+        \begin{frame}{Aim 1 Estimator Overview (v1)}
+            \begin{columns}
+                \column{0.6\textwidth}
+                \begin{itemize}
+                    \item Constraint formulation 2: non-linear, hinge joint (1 DoF)
+                         { \tiny \begin{align*}
+                            & \vec{q}_{s, k} = \mat{R}_{s, k} = 
+                                \begin{bmatrix}
+                                    \vec{R}_{s, x, k} & \vec{R}_{s, y, k} & \vec{R}_{s, z, k}
+                                \end{bmatrix} \\
+    	                    & \vec{p}_{lhip, k} = \vec{p}_{pelv, k} + d_{pelv}/2*\vec{R}_{pelv, y, k} \\
+                            & \vec{p}_{lkne, k} = \vec{p}_{lank, k} + d_{ltib}*\vec{R}_{ltib, z, k} \\
+                            & (\vec{p}_{lhip, k} - \vec{p}_{lkne, k} ) \cdot \vec{R}_{ltib, y, k} = 0\\
+                            & ||\vec{p}_{lhip, k} - \vec{p}_{lkne, k}||_2 = d_{lfem}
+                        \end{align*} }%
+                    \item Projection algorithm: MATLAB's fmincon
+                \end{itemize}
+                
+                \note[item]{non-linear}
+                \note[item]{the red line maintains fixed length. red line lies in the plane defined these 3 points (ankle, knee, hips)}
+                \column{0.4\textwidth}
+                \begin{figure}
+                    \centering
+                    \includegraphics[height=0.7\textheight]{figures/body3d-HJCv2.png}
+                    \caption*{Formulation 2}
+                \end{figure}
+            \end{columns}
+        \end{frame}
+        
+        \begin{frame}{Aim 1 Estimator Preliminary Results (v1)}
+            \begin{figure}
+                \includegraphics[width=\textwidth]{figures/aim1-result-anklepos.png}
+                \caption*{Ankle position relative to the pelvis}
+            \end{figure}
+            
+		    \note[item]{Highlight that the x and y pos estimation still needs work while z is doing well and show that in the table and plot}
+            \note[item]{I will try compare with mode position error if I have time}
+        \end{frame}
+        
+		\begin{frame}{Aim 1 Estimator Preliminary Results (v1)}
+		    \begin{center}
+		        Demo video
+		    \end{center}
+		    \note[item]{Note that the algorithm is estimating from the pelvis. It is not estimating the global position. For this video, I simply placed my body estimate of the correct global position to help us visualize and understand what is happening}
+		    \note[item]{although it may be difficult to observe, my estimated reconstruction is a bit jerky compared to the ground truth}
+        \end{frame}
+        
+        \begin{frame}{Aim 1 Estimator Preliminary Results (v1)}
+            \begin{columns}
+                \column{0.6\textwidth}
+                    Other findings
+                    \begin{itemize}
+                        \item Linear constraint: works better due to knee lock assumption
+                        \item Non-linear constraint: added linearisation error with increased error during high dynamic motion
+                    \end{itemize}
+                    
+                    \pause
+                    
+                    To finish v1
+                    \begin{itemize}
+                        \item Public dataset (total capture dataset) $\Rightarrow$ capture own data 
+                        \item Write and publish!
+                    \end{itemize}
+                \note[item]<1>{linear works better because if we walk, we don't move knee much. however if we want to capture activities of daily living, this assumption will cause issues}
+                \note[item]<1>{nonlinear is ok, but not good with fast motion}
+                
+                \column{0.4\textwidth}
+                    \begin{figure}
+                        \centering
+                        \includegraphics[width=\textwidth]{figures/tcd-init-pose.png}
+                        \caption*{TCD init pose}
+                    \end{figure}
+            
+            \end{columns}
+        \end{frame}
+        
+        \begin{frame}{Aim 1 Estimator Next Steps (v2)}
+            \begin{columns}
+                \column{0.6\textwidth}
+                Estimator v1 limitations $\Rightarrow$ options moving forward
+                \begin{itemize}
+                    \item<1-> Knee is assumed hinge joint
+                    \item<2-> Uncertainty (covariance) estimate is inaccurate, hence not used $\Rightarrow$ unscented Kalman filter (UKF) and particle filter (PF)
+                    \item<3-> Orientation is assumed correct $\Rightarrow$ other state representation? (e.g., swing twist parameterisation)
+                    \item<4-> Crouching drift $\Rightarrow$ add more sensors
+                \end{itemize}
+                
+                \column{0.4\textwidth}
+                    \begin{figure}
+                        \centering
+                        \includegraphics<2>[width=\textwidth]{figures/apr-2018Jun-uncertainty-estimate.png}
+                       \includegraphics<3>[width=\textwidth]{figures/apr-2018Jun-uncertainty-estimate.png} \includegraphics<4>[width=\textwidth]{figures/crouch-drift.png}
+                    \end{figure}
+            \end{columns}
+            \note[item]<1>{knee hinge joint - leave as is. design choice.}
+            \note[item]<2>{EKF which is good for linear systems, is not good at tracking uncertainty. Usually we have a running estimate of which information we trust more or trust less, my estimate or new sensor measurements. Strict constraints lead to numerical instability. UKF and PF for better covariance estimate and more accurate non-linear model}
+            \note[item]<3>{Other state representation such that my estimate remains in the constraint space}
+            \note[item]<2>{SR: We need to keep a running estimate of which information we trust more or trust less. The related mathematics are unstable when strict constraints (like hinge joints) are imposed. Why? Because it completely removes uncertainty in some dimensions of our variable space, but not others.}
+            \note[item]<3>{Crouching drift - for now we prevent it by our floor assumption which does not help in daily living as you walk stair and slopes. more sensors as suggested in my aim 2}
+        \end{frame}
+        
+	\subsection{Aim 2 IMU+UWB estimator}
+	    \begin{frame}{Aim 2 IMU+UWB Estimator Next Steps}    
+	        \begin{itemize}
+	            \item Incorporate UWB ranging measurement to my estimator
+	            \item Evaluate the accuracy of UWB and how body parts affect it
+	            \item Prototype sensor unit using off-the-shelf components
+	        \end{itemize}
+	        
+	        \begin{figure}
+                \centering
+                
+	        	\subcaptionbox{System overview}
+    	        	{\includegraphics[height=0.5\textheight]{figures/sparse-mocap-step2.png} }
+    	        \hspace{1cm}
+	        	\subcaptionbox{Prototype v0 design by undergraduate student Jeevan Shah}
+    	        	{\includegraphics[height=0.5\textheight]{figures/kmu_v0.png} }
+            \end{figure}
+            \note[item]{incorporate UWB. utilize information in the measurement update step}
+            \note[item]{UWB is based on wireless radio technology. Body in line of sight will definite affect its accuracy so this must be tested}
+	        \note[item]{build from the work conducted by undergraduate thesis student Jeevan Shah}
+	    \end{frame}
+	    
+	    \begin{frame}{Aim 2 IMU+UWB Estimator Evaluation}
+	        \begin{columns}
+	            \column{0.6\textwidth}
+    	        \begin{itemize}
+    	            \item Vicon (1 mm accuracy benchmark system) vs proposed wearable system
+    	            \item Able-bodied subjects
+    	                \begin{itemize}
+    	                    \item $n \approx 5$ participants
+    	                    \item Action: walk, run, jumping jacks
+    	                \end{itemize}
+    	            \item Non able-bodied subjects
+    	                \begin{itemize}
+    	                    \item Target: elderly with fall risk or knee osteoarthritis
+    	                    \item Sample size is TBD
+    	                    \item Action: walk
+    	                \end{itemize}
+                    \item Compare accuracy of joint angles, position/orientation of body segments
+                    \item Note: data capture will also include the setup needed for Aim 3
+    	        \end{itemize}
+    	        
+    	        \column{0.4\textwidth}
+    	        \begin{figure}
+    	            \centering
+    	            \includegraphics[width=\textwidth]{figures/sample-setup.jpg}
+    	            \caption*{Sample setup}
+    	        \end{figure}
+	        \end{columns}
+	    \end{frame}
+	    
+	\subsection{Aim 3 7 segment estimator}
+	    \begin{frame}{Aim 3 Extend to the foot}
+	        \begin{columns}
+	            \column{0.6\textwidth}
+    	        \begin{itemize}
+    	            \item Reformulate model to include the foot using the best configuration from Aim 2, 
+    	            \item Assumptions
+    	                \begin{itemize}
+    	                    \item Ankle is also hinge joint
+    	                    \item (maybe) balance constraint
+    	                \end{itemize}
+    	        \end{itemize}
+    	        
+    	        \note[item]{track 7 segment with 3 sensors more information is needed so I expect I'll need more assumption / information}
+    	        \column{0.4\textwidth}
+    	        \begin{figure}
+    	            \centering
+    	            \includegraphics[width=\textwidth]{figures/body3d-HJCv3.png}
+    	            \caption*{Constraint formulation}
+    	        \end{figure}
+	        \end{columns}
+	    \end{frame}
+	    
+	\section{Timeline}
+	\begin{frame}{Timeline}
+		\includegraphics[width=\textwidth]{figures/gantt-APR-2018.png}
+		\note[item]{This semester, finalize my LR and a draft of aim 1. In the next few months, I hope to publish my aim 1 resuls}
+		\note[item]{Next year, start working on IMU+UWB, and evaluation on able-bodied subjects}
+		\note[item]{Third year, evaluation on non-able bodied subjects, extending algorithm to include the foot}
+	\end{frame}
+	
+	\section{Acknowledgements}
+	\begin{frame}
+		\frametitle{Acknowledgements}
+		Special thanks to:
+		\begin{itemize}
+			\item Scientia Prof. Nigel Lovell, Associate Prof. Stephen Redmond
+			\item Gait technologies group (Dr. Michael Del Rosario, Michael Raitor, Inigo Sesar)
+			\item Colleagues in Samuels LG
+			\item Neuroscience Research Australia (NeuRA)
+		    \item My wife (Cherry Sy)
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}{}
+	    \begin{center}
+	    \textbf{Q \& A}
+	    \end{center}
+	\end{frame}
+
+    \section{Appendix}
+        \begin{frame}{}
+            \textbf{Appendix}
+        \end{frame}
+        
+    	\begin{frame}{Aim 1 Estimator Overview (v1)}
+    		Develop sparse sensor MoCap algorithm to track pelvis, femur, and tibia.
+    		
+    		\begin{itemize}
+    			\item Estimator framework: Extended Kalman Filter (EKF)
+    			\item State $\vec{x}$: position, velocity, and orientation of the pelvis and tibia (2x) 
+    			    \[ 
+    			        \vec{x}_{k} = \scalemath{0.75}{
+        			        \begin{bmatrix}
+        			            \vec{p}_{pelv, k} & \vec{v}_{pelv, k} & \vec{q}_{pelv, k} & 
+        			            \vec{p}_{lank, k} & \vec{v}_{lank, k} & \vec{q}_{ltib, k} & 
+        			            \vec{p}_{rank, k} & \vec{v}_{rank, k} & \vec{q}_{rtib, k}
+    			            \end{bmatrix}^T }
+		            \] where$\vec{p}_{segment, k}, \vec{v}_{segment, k} \in \R^3$, and quaternion $\vec{q}_{segment, k} \in SO(3)$.
+
+    			\item Input $\vec{u}$: acceleration from IMU attached to the pelvis and tibia (2x)
+    			    \[ 
+    			        \vec{u} = \begin{bmatrix}
+    			                a_{pelv, k} & a_{lank, k} & a_{rank, k}
+    			            \end{bmatrix}^T
+			        \]
+	        \end{itemize}
+        \end{frame}
+        
+        \begin{frame}{Aim 1 Estimator Overview (v1)}
+            \begin{itemize}
+    			\item Process model $x_{k+1} = f(x_{k})$
+    			    \begin{align*}
+    			        \vec{p}_{s, k+1} &= \vec{p}_{s, k} + \vec{v}_{s, k}*dt + \frac{1}{2} \vec{a}_{s, k}*dt^2 \\
+    			        \vec{v}_{s, k+1} &= \vec{v}_{s, k} + \vec{a}_{s, k}*dt \\
+    			        \vec{q}_{s, k+1} &= \vec{q}_{s, k}
+    			    \end{align*}
+    			    where $s \in \{pelv, lank/ltib, rank/rtib \}$
+    			    
+			    \item Measurement
+			        \begin{itemize}
+			            \item Orientation estimation $\vec{q}_{k} = ori$
+			            \item Zero velocity update: $\vec{v}_{s, k} = 0$
+			            \item Floor assumption: $\vec{p}_{s, k, z} = floor$
+			        \end{itemize}
+    		\end{itemize}
+		\end{frame}
+	
+	%\begin{frame}[allowframebreaks]
+	%	\frametitle{References}
+	%	\tiny
+	%	\bibliographystyle{ieeetr}
+	%	\bibliography{mendeley}
+	%\end{frame}
+	
+\end{document}

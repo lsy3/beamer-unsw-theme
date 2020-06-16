@@ -1,0 +1,62 @@
+\usepackage{tikz}
+
+\mode<presentation>
+
+\DeclareOptionBeamer{background}{\def\beamer@UNSW@background{#1}}
+\ExecuteOptionsBeamer{background=} % Default value is empty
+\DeclareOptionBeamer{logo}{\def\beamer@UNSW@logo{#1}}
+\ExecuteOptionsBeamer{logo=} % Default value is empty
+\DeclareOptionBeamer{sidelogo}{\def\beamer@UNSW@sidelogo{#1}}
+\ExecuteOptionsBeamer{sidelogo=} % Default value is empty
+\ProcessOptionsBeamer
+
+% footer has a uds logo and shows page number only
+\setbeamertemplate{footline}
+{%
+	\leavevmode%
+	\hbox{%
+		\begin{beamercolorbox}[wd=\paperwidth,ht=0.5cm,dp=1ex,left]{pagenumber}%
+			\hspace*{1ex} \insertframenumber{} \hspace*{1ex}
+		\end{beamercolorbox}
+		\if \beamer@UNSW@sidelogo\@empty
+		\else
+			\llap{\includegraphics[height=0.4cm]{\beamer@UNSW@sidelogo} \hspace{2mm}}
+		\fi
+	}%
+}
+
+% we insert the watermark background from the sidebar
+\setbeamertemplate{sidebar right}
+{
+	\if \beamer@UNSW@background\@empty
+	\else
+		\vskip.1\beamer@leftmargin%
+		\vfill%
+		\llap{\includegraphics[width=.5\paperwidth,height=.5\paperheight]{\beamer@UNSW@background}}
+	\fi
+}
+
+% customisation for the title page
+\setbeamertemplate{title page}
+{
+	
+	
+		\begin{columns}
+			\column{0.2\paperwidth}
+				\begin{beamercolorbox}[sep=0.2cm, center]{titlebar}%
+					\includegraphics[height=2cm]{\beamer@UNSW@logo}
+				\end{beamercolorbox}
+			\column{3mm}
+			\column{0.8\paperwidth}
+				\usebeamerfont{title}{\usebeamercolor[fg]{title}\inserttitle}\par
+				\usebeamerfont{subtitle}{\usebeamercolor[fg]{subtitle}\insertsubtitle}\par
+		\end{columns}
+	
+	\bigskip
+	\usebeamerfont{author}\insertauthor\par
+	\usebeamerfont{institute}\insertinstitute\par
+	\usebeamerfont{date}\insertdate
+}
+
+\mode<all>
+\endinput
